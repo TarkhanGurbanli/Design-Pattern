@@ -1,6 +1,6 @@
 # Design-Pattern
 
-# 📌 Java Design Pattern-lər - Detallı İzah və Nümunələr (Azərbaycan Dilində)
+# 📌 Java Design Pattern-lər - Detallı İzah və Nümunələr
 
 ## 📖 Giriş
 

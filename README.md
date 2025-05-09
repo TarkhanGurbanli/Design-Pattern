@@ -1,44 +1,65 @@
-# Design-Pattern
+# Design Patterns
 
-# 📌 Java Design Pattern-lər - Detallı İzah və Nümunələr
+## 📖 Nədir Design Pattern?
 
-## 📖 Giriş
+Design pattern-lər — proqram təminatı arxitekturasında təkrarlanan problemlərə verilmiş, sınanmış, səlisləşdirilmiş həll yollarıdır. Yəni, hansısa problem qarşısında proqram təminatı aləmində artıq istifadə olunmuş, effektiv bir metod.
 
-Design Pattern-lər — proqram təminatı dizaynında təkrarlanan problemlər üçün sınaqdan çıxmış həllərdir. Yəni, proqramçılar illərlə qarşılaşdıqları problemləri eyni və ya oxşar yollarla həll etmək üçün nümunələr (patternlər) yaradıb. Bu pattern-lər proqramın daha oxunaqlı, genişlənə bilən və dəstəklənə bilən olmasına kömək edir.
+## 📦 3 Önəmli Kateqoriya:
 
-## 📚 Design Pattern Növləri
+### 1️⃣ Creational (Yaradıcı)
 
-Design Pattern-lər əsasən 3 kateqoriyaya bölünür:
+Obyektlərin yaradılması prosesi ilə bağlı problemləri həll edir.
 
-1. **Creational (Yaradıcı) Design Patterns**
-2. **Structural (Struktural) Design Patterns**
-3. **Behavioral (Davranış) Design Patterns**
+* **Singleton**
+* **Factory Method**
+* **Abstract Factory**
+* **Builder**
+* **Prototype**
+
+### 2️⃣ Structural (Struktur)
+
+Obyektləri və sinifləri bir-birilə necə birləşdirmək lazım olduğunu təyin edir.
+
+* **Adapter**
+* **Decorator**
+* **Composite**
+* **Proxy**
+* **Facade**
+* **Bridge**
+* **Flyweight**
+
+### 3️⃣ Behavioral (Davranış)
+
+Obyektlər arası əlaqə və davranış modellərini təşkil edir.
+
+* **Observer**
+* **Strategy**
+* **Command**
+* **Template Method**
+* **Iterator**
+* **State**
+* **Chain of Responsibility**
+* **Mediator**
 
 ---
 
-## 🛠️ 1️⃣ Creational (Yaradıcı) Design Pattern-lər
+## 🎯 Vacib və Praktiki Design Pattern-lər:
 
-Obyektlərin yaradılması prosesinə nəzarət edən pattern-lərdir. Məqsəd, obyektin necə yaradılacağını müstəqil etməkdir.
+### 1️⃣ Singleton Pattern (Creational)
 
-**Bu kateqoriyaya aid pattern-lər:**
+**Problem:** Proqramda sadəcə bir obyektin olması lazımdır.
 
-* Singleton
-* Factory Method
-* Abstract Factory
-* Builder
-* Prototype
+**Real Dünya:** Konfiqurasiya faylı, Database connection, Logger.
 
-### 🔹 Singleton Pattern
-
-Bir class-dan yalnız 1 obyektin yaradılmasını təmin edir.
-
-**Nümunə:**
+**Kod:**
 
 ```java
 public class Singleton {
     private static Singleton instance;
 
-    private Singleton() {}
+    private Singleton() {
+        // private constructor
+    }
 
     public static Singleton getInstance() {
         if (instance == null) {
@@ -49,247 +70,236 @@ public class Singleton {
 }
 ```
 
-### 🔹 Factory Method Pattern
+### 2️⃣ Factory Method Pattern (Creational)
 
-Obyektlərin yaradılmasını subclass-lara həvalə edir.
+**Problem:** Hansı obyektin yaradılacağı compile-time yox, run-time-da təyin olunmalıdır.
 
-**Nümunə:**
+**Real Dünya:** Mesaj tipləri: Email, SMS, PushNotification.
+
+**Kod:**
 
 ```java
-interface Shape {
-    void draw();
+interface Notification {
+    void notifyUser();
 }
 
-class Circle implements Shape {
-    public void draw() {
-        System.out.println("Circle cizildi");
+class EmailNotification implements Notification {
+    public void notifyUser() {
+        System.out.println("Email notification sent.");
     }
 }
 
-class ShapeFactory {
-    public Shape getShape(String type) {
-        if (type.equalsIgnoreCase("circle")) {
-            return new Circle();
+class SMSNotification implements Notification {
+    public void notifyUser() {
+        System.out.println("SMS notification sent.");
+    }
+}
+
+class NotificationFactory {
+    public Notification createNotification(String type) {
+        if (type.equals("EMAIL")) {
+            return new EmailNotification();
+        } else if (type.equals("SMS")) {
+            return new SMSNotification();
         }
         return null;
     }
 }
+
+// İstifadə
+NotificationFactory factory = new NotificationFactory();
+Notification notification = factory.createNotification("EMAIL");
+notification.notifyUser();
 ```
 
-### 🔹 Abstract Factory Pattern
+### 3️⃣ Builder Pattern (Creational)
 
-Bir-biri ilə əlaqəli factory-lərin yaradılmasını təmin edir.
+**Problem:** Complex obyektlərin yaradılması prosesini sadələşdirmək.
 
-**Nümunə:**
+**Real Dünya:** BurgerBuilder, ComputerBuilder
+
+**Kod:**
 
 ```java
-interface Button {
-    void render();
-}
+class Computer {
+    private String CPU;
+    private String RAM;
 
-class WindowsButton implements Button {
-    public void render() {
-        System.out.println("Windows Button");
+    public static class Builder {
+        private String CPU;
+        private String RAM;
+
+        public Builder setCPU(String CPU) {
+            this.CPU = CPU;
+            return this;
+        }
+
+        public Builder setRAM(String RAM) {
+            this.RAM = RAM;
+            return this;
+        }
+
+        public Computer build() {
+            Computer computer = new Computer();
+            computer.CPU = this.CPU;
+            computer.RAM = this.RAM;
+            return computer;
+        }
     }
 }
 
-interface GUIFactory {
-    Button createButton();
-}
-
-class WindowsFactory implements GUIFactory {
-    public Button createButton() {
-        return new WindowsButton();
-    }
-}
+// İstifadə
+Computer computer = new Computer.Builder()
+                        .setCPU("Intel i7")
+                        .setRAM("16GB")
+                        .build();
 ```
 
-### 🔹 Builder Pattern
+### 4️⃣ Observer Pattern (Behavioral)
 
-Çox mürəkkəb obyektlərin addım-addım yaradılmasını təmin edir.
+**Problem:** Bir obyekt dəyişəndə digər obyektlər avtomatik xəbərdar olmalıdır.
 
-**Nümunə:**
+**Real Dünya:** YouTube Subscribe, Event listener-lər.
 
-```java
-class Product {
-    private String partA;
-    private String partB;
-
-    public void setPartA(String partA) { this.partA = partA; }
-    public void setPartB(String partB) { this.partB = partB; }
-}
-
-class ProductBuilder {
-    private Product product = new Product();
-
-    public ProductBuilder buildPartA() {
-        product.setPartA("A hissəsi");
-        return this;
-    }
-
-    public ProductBuilder buildPartB() {
-        product.setPartB("B hissəsi");
-        return this;
-    }
-
-    public Product getResult() {
-        return product;
-    }
-}
-```
-
-### 🔹 Prototype Pattern
-
-Obyektin surətinin (clone) yaradılması.
-
-**Nümunə:**
-
-```java
-class Person implements Cloneable {
-    public String name;
-
-    public Person(String name) {
-        this.name = name;
-    }
-
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-}
-```
-
----
-
-## 🏗️ 2️⃣ Structural (Struktural) Design Pattern-lər
-
-Sinif və obyektləri birləşdirərək daha böyük strukturlar yaratmaq üçün istifadə olunur.
-
-**Bu kateqoriyaya aid pattern-lər:**
-
-* Adapter
-* Bridge
-* Composite
-* Decorator
-* Facade
-* Flyweight
-* Proxy
-
-### 🔹 Adapter Pattern
-
-Uyğunsuz interfeysləri uyğunlaşdırır.
-
-**Nümunə:**
-
-```java
-interface Target {
-    void request();
-}
-
-class Adaptee {
-    void specificRequest() {
-        System.out.println("Adaptee methodu");
-    }
-}
-
-class Adapter implements Target {
-    private Adaptee adaptee;
-
-    public Adapter(Adaptee adaptee) {
-        this.adaptee = adaptee;
-    }
-
-    public void request() {
-        adaptee.specificRequest();
-    }
-}
-```
-
-### 🔹 Decorator Pattern
-
-Obyektə əlavə məsuliyyətlər yükləyir, lakin sinfi dəyişmədən.
-
-**Nümunə:**
-
-```java
-interface Notifier {
-    void send();
-}
-
-class EmailNotifier implements Notifier {
-    public void send() {
-        System.out.println("Email göndərildi");
-    }
-}
-
-class SMSNotifier implements Notifier {
-    private Notifier notifier;
-
-    public SMSNotifier(Notifier notifier) {
-        this.notifier = notifier;
-    }
-
-    public void send() {
-        notifier.send();
-        System.out.println("SMS göndərildi");
-    }
-}
-```
-
----
-
-## 🎭 3️⃣ Behavioral (Davranış) Design Pattern-lər
-
-Obyektlər arasındakı ünsiyyəti və məsuliyyət bölgüsünü müəyyən edir.
-
-**Bu kateqoriyaya aid pattern-lər:**
-
-* Chain of Responsibility
-* Command
-* Iterator
-* Mediator
-* Memento
-* Observer
-* State
-* Strategy
-* Template Method
-* Visitor
-
-### 🔹 Observer Pattern
-
-Bir obyektin vəziyyəti dəyişəndə ona bağlı digər obyektlərə xəbər verir.
-
-**Nümunə:**
+**Kod:**
 
 ```java
 interface Observer {
     void update(String message);
 }
 
-class ConcreteObserver implements Observer {
+class Subscriber implements Observer {
     private String name;
 
-    public ConcreteObserver(String name) {
+    public Subscriber(String name) {
         this.name = name;
     }
 
     public void update(String message) {
-        System.out.println(name + " xəbər aldı: " + message);
+        System.out.println(name + " got message: " + message);
     }
 }
 
-class Subject {
-    private List<Observer> observers = new ArrayList<>();
+class Channel {
+    private List<Observer> subscribers = new ArrayList<>();
 
-    public void addObserver(Observer observer) {
-        observers.add(observer);
+    public void subscribe(Observer o) {
+        subscribers.add(o);
     }
 
-    public void notifyObservers(String message) {
-        for (Observer observer : observers) {
-            observer.update(message);
+    public void notifySubscribers(String message) {
+        for (Observer o : subscribers) {
+            o.update(message);
         }
     }
 }
+
+// İstifadə
+Channel channel = new Channel();
+Subscriber a = new Subscriber("Elvin");
+Subscriber b = new Subscriber("Rashid");
+
+channel.subscribe(a);
+channel.subscribe(b);
+
+channel.notifySubscribers("New Video Uploaded!");
 ```
 
+### 5️⃣ Strategy Pattern (Behavioral)
+
+**Problem:** Eyni işi fərqli alqoritmlərlə icra etmək.
+
+**Real Dünya:** Payment Gateway-lər, sort strategiyaları.
+
+**Kod:**
+
+```java
+interface PaymentStrategy {
+    void pay(int amount);
+}
+
+class CreditCardPayment implements PaymentStrategy {
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " with Credit Card.");
+    }
+}
+
+class PayPalPayment implements PaymentStrategy {
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " with PayPal.");
+    }
+}
+
+class ShoppingCart {
+    private PaymentStrategy paymentStrategy;
+
+    public void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    public void checkout(int amount) {
+        paymentStrategy.pay(amount);
+    }
+}
+
+// İstifadə
+ShoppingCart cart = new ShoppingCart();
+cart.setPaymentStrategy(new CreditCardPayment());
+cart.checkout(250);
+cart.setPaymentStrategy(new PayPalPayment());
+cart.checkout(100);
+```
+
+### 6️⃣ Proxy Pattern (Structural)
+
+**Problem:** Bir obyektə nəzarət etmək və ya ona girişə əlavə əməliyyatlar əlavə etmək lazımdırsa.
+
+**Real Dünya:** VPN proxy, təhlükəsizlik yoxlaması, caching sistemi.
+
+**Teoriya:**
+Proxy, real obyektə əvəzedici kimi çıxış edir. İstifadəçi Proxy-dən istifadə edir, o isə əsl obyektə qərara əsasən müraciət edir və ya etməz.
+
+**Kod:**
+
+```java
+interface Service {
+    void request();
+}
+
+class RealService implements Service {
+    public void request() {
+        System.out.println("Real Service is called.");
+    }
+}
+
+class ProxyService implements Service {
+    private RealService realService;
+
+    public void request() {
+        if (realService == null) {
+            realService = new RealService();
+        }
+        System.out.println("Proxy: yoxlama keçirildi.");
+        realService.request();
+    }
+}
+
+// İstifadə
+Service service = new ProxyService();
+service.request();
+```
+
+**İzah:**
+
+* İstifadəçi birbaşa `RealService`-ə müraciət etmir.
+* Əvvəlcə `ProxyService`-ə müraciət edir.
+* `ProxyService` lazım olsa `RealService`-i yaradır və ya yoxlama keçirir.
+* Bu, təhlükəsizlik, caching, lazy-loading üçün əla texnikadır.
+
 ---
+
+## ✅ Nəticə:
+
+Bu design pattern-lər istənilən Java proyektində real istifadə edilir. Daha dəqiq arxitektura, test asanlığı, dayanıqlı və genişlənən sistem təşkil edir.
+
+Daha çox pattern istəyirsənsə, davamını yazaram. Sən dəyərli developer kimi bu pattern-lərin məntiqini anlayıb istənilən proyektə tətbiq etməlisən!

@@ -293,18 +293,3 @@ class Subject {
 ```
 
 ---
-
-## 📌 Nəticə
-
-Bu faylda Java-da ən çox istifadə edilən Design Pattern-ləri kateqoriyalar üzrə bölüb, hər birini nümunə ilə izah etdik. Real layihələrdə bu pattern-lərin tətbiqi kodun strukturlaşdırılması və təkrarlanan problemlərin həlli üçün olduqca vacibdir.
-
-**Əlavə:** Digər pattern-ləri və daha dərindən izahları əlavə etmək mümkündür.
-
-İstəyirsənsə, hər pattern üçün real layihə nümunəsi də yaza bilərəm.
-
----
-
-## 📃 Müəllif: Sənin Adın
-
-## 📅 Tarix: 2025-05-08
-

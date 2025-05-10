@@ -188,6 +188,91 @@ protected Object clone() throws CloneNotSupportedException {
 }
 ```
 
+#### 📌 Enum Singleton Nədir?
+
+**Normalda Singleton pattern-də:**
+- private constructor yazılır,
+- static instance dəyişəni olur,
+- və `getInstance()` metodu ilə instance qaytarılır.
+
+**Amma bu yanaşmanın bəzi zəiflikləri var:**
+- Reflection ilə private constructor-u çağırmaq
+- Serialization ilə obyektin klonunu çıxarmaq
+
+**Enum Singleton isə:**
+- Reflection-a qarşı təhlükəsizdir
+- Serialization-a qarşı təhlükəsizdir
+- Thread-safe-dir
+- Java Enum-ları JVM tərəfindən bir dəfə yüklənir və çox stabildir.
+
+| Zəiflik                  | Normal Singleton                                             | Enum Singleton            |
+| :----------------------- | :----------------------------------------------------------- | :------------------------ |
+| Reflection ilə qırmaq    | Mümkün                                                       | Mümkün deyil              |
+| Serialization ilə qırmaq | Mümkün                                                       | Mümkün deyil              |
+| Thread-safe              | Yox (əgər `synchronized` və ya `volatile` istifadə olunmasa) | Bəli (JVM özü təmin edir) |
+
+**Niyə?**
+- Çünki Java Enum-ların instance-larını JVM özü idarə edir və bu instance-lar əvvəlcədən static olaraq yüklənir, ona görə də Reflection və Serialization orada keçmir.
+
+**📖 Enum Singleton Kodu:**
+
+```java
+public enum DatabaseConnectionManager {
+    INSTANCE;
+
+    private String connection;
+
+    // Constructor (yalnız bir dəfə çağırılır)
+    DatabaseConnectionManager() {
+        // Məsələn connection yaradırıq
+        connection = "Connected to Database";
+        System.out.println("Connection yaradıldı!");
+    }
+
+    public String getConnection() {
+        return connection;
+    }
+
+    public void disconnect() {
+        connection = "Disconnected";
+        System.out.println("Connection kəsildi!");
+    }
+}
+```
+
+**📖 Necə İstifadə Edilir?**
+```java
+public class Main {
+    public static void main(String[] args) {
+        // İlk dəfə instance çağırılır
+        DatabaseConnectionManager manager1 = DatabaseConnectionManager.INSTANCE;
+        System.out.println(manager1.getConnection());
+
+        // İkinci dəfə çağıranda yenidən yaradılmır
+        DatabaseConnectionManager manager2 = DatabaseConnectionManager.INSTANCE;
+        System.out.println(manager2.getConnection());
+
+        // Eyni instance-ı disconnect edək
+        manager1.disconnect();
+
+        // Yenə manager2 ilə connection statusuna baxaq
+        System.out.println(manager2.getConnection());
+    }
+}
+```
+
+**📌 İzah:**
+- INSTANCE — bizim Singleton obyektimizdi.
+- DatabaseConnectionManager() constructor yalnız bir dəfə çağırılır (proqramda ilk dəfə çağıranda).
+- Hər dəfə DatabaseConnectionManager.INSTANCE çağıranda eyni instance-a referans qaytarılır.
+- Nə qədər manager1, manager2 yazsan da — eyni connection-u paylaşır.
+
+**📌 Faydası:**
+- ✅ Reflection ilə qırmaq olmur
+- ✅ Serialization ilə qırmaq olmur
+- ✅ Thread-safe
+- ✅ Sadə, qəşəng və oxunaqlı
+
 ### 2️⃣ Factory Method Pattern (Creational)
 
 **Problem:** Hansı obyektin yaradılacağını compile-time yox, run-time-da seçmək lazımdır.
@@ -384,3 +469,15 @@ class ProxyService implements Service {
     }
 }
 ```
+
+| Creational (Yaradıcı) | Structural (Struktural) | Behavioral (Davranış)   |
+| :-------------------- | :---------------------- | :---------------------- |
+| Singleton             | Adapter                 | Observer                |
+| Factory Method        | Decorator               | Strategy                |
+| Abstract Factory      | Proxy                   | Command                 |
+| Builder               | Facade                  | State                   |
+| Prototype             | Composite               | Chain of Responsibility |
+|                       | Bridge                  | Template Method         |
+|                       | Flyweight               | Mediator                |
+|                       |                         | Iterator                |
+

@@ -273,6 +273,8 @@ public class Main {
 - ✅ Thread-safe
 - ✅ Sadə, qəşəng və oxunaqlı
 
+---
+
 ### 2️⃣ Factory Method Pattern (Creational)
 
 **Problem:** Hansı obyektin yaradılacağını compile-time yox, run-time-da seçmək lazımdır.
@@ -310,6 +312,8 @@ class NotificationFactory {
     }
 }
 ```
+
+---
 
 ### 3️⃣ Builder Pattern (Creational)
 
@@ -349,6 +353,8 @@ class Computer {
     }
 }
 ```
+
+---
 
 ### 4️⃣ Observer Pattern (Behavioral)
 
@@ -394,6 +400,8 @@ class Channel {
 }
 ```
 
+---
+
 ### 5️⃣ Strategy Pattern (Behavioral)
 
 **Problem:** Davranışı run-time-da dəyişmək.
@@ -434,6 +442,8 @@ class ShoppingCart {
     }
 }
 ```
+
+---
 
 ### 6️⃣ Proxy Pattern (Structural)
 

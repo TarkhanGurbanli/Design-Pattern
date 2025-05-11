@@ -273,6 +273,94 @@ public class Main {
 - ✅ Thread-safe
 - ✅ Sadə, qəşəng və oxunaqlı
 
+
+### 📌 Problem nədir? — Thread Safety nədir?
+
+**Java-da proqram çox vaxt çoxlu thread-lərlə işləyir. Məsələn:**
+
+- Birdən çox istifadəçi eyni anda sistemə daxil ola bilər.
+- Birdən çox prosess paralel işləyə bilər.
+
+**Thread Safety o deməkdir ki:**
+- Birdən çox thread eyni anda eyni obyektə və ya metoda müraciət edəndə proqramın vəziyyəti pozulmasın, səhv nəticələr yaranmasın.
+
+#### 📌 Singleton-da problem harda çıxır?
+**Düşün:**
+```java
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton(); // təhlükəli nöqtə
+        }
+        return instance;
+    }
+}
+```
+
+- İndi iki `thread` eyni anda `getInstance()` çağırsa və `instance` hələ `null` olsa:
+    - Hər ikisi `if (instance == null)` yoxlayır → `true`.
+    - İkisi də yeni obyekt yaradır və `Singleton pattern` pozulur.
+
+
+#### 📌 Thread-safe etmək üçün yollar
+
+##### 📌 1️⃣ synchronized Metod
+```java
+public static synchronized Singleton getInstance() {
+    if (instance == null) {
+        instance = new Singleton();
+    }
+    return instance;
+}
+```
+
+**Nə baş verir?**
+- `synchronized` o deməkdir ki, eyni anda yalnız bir `thread` metoda girə bilər.
+- Başqası girməyə çalışanda gözləyir.
+
+**✅ Üstünlüklər:**
+- Sadə və təhlükəsiz.
+
+**❌ Çatışmazlıqlar:**
+- Performans zəifliyinə səbəb ola bilər, çünki hər dəfə metoda girəndə lock alır.
+
+##### 📌 2️⃣ Double-Checked Locking (DCL)
+**Bu daha optimallaşdırılmış variantdır:**
+```java
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+**Niyə 2 dəfə `if (instance == null)` yoxlayırıq?**
+- Birinci yoxlama lock almadan işlədir (performans üçün).
+- İkinci yoxlama `synchronized` içindədir ki, əmin olaq bir thread yaradır.
+
+**Niyə `volatile`?**
+- `volatile` deyir ki, bu dəyişən bütün thread-lər üçün həmişə ən son dəyəri görsün.
+- Java memory modelində cache məsələlərinə görə lazımdı.
+
+**✅ Üstünlüklər:**
+- Daha sürətli.
+- Thread-safe.
+
 ---
 
 ### 2️⃣ Factory Method Pattern (Creational)

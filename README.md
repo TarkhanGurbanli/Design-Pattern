@@ -867,6 +867,8 @@ calc.subtract(10, 4);
 
 #### 📊 Proxy Pattern İş Axış Diaqramı
 
+```css
+
 +------------+
 |   Client   |
 +------------+
@@ -887,6 +889,7 @@ Virtual Protection Remote
 |       Real Object        |
 +-------------------------+
 
+```
 
 **Açıqlama:**
 - `Client` istəyi Proxy-yə göndərir.

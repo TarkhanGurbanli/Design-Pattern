@@ -568,16 +568,34 @@ class ProxyService implements Service {
 } 
 ```
 
-#### 🔄 Proxy Pattern Növləri və İşləmə Məntiqi
+#### 🔄 Proxy Pattern Növləri və İşləmə Məntiqi && Proxy Pattern (Structural Design Pattern)
 
-Proxy Pattern, bir obyektə girişi nəzarət etmək və ya onun üzərində əlavə funksionallıq təmin etmək üçün istifadə olunur. Proxy, real obyektlə eyni interfeysi təqdim edir və istifadəçi ilə real obyekt arasında dayanır.
+Proxy Pattern — bir obyektə birbaşa çıxışı nəzarət altında saxlamaq və ya ona əlavə əməliyyatlar əlavə etmək üçün istifadə olunan dizayn şablonudur. Proxy, əsl obyektlə eyni interfeysi təqdim edir və client ilə real obyekt arasında vasitəçi rolunu oynayır.
+
+#### 📌 İstifadə Məqsədləri
+- Obyektə çıxışı məhdudlaşdırmaq
+- Gecikmiş (Lazy) yaradılmanı təmin etmək
+- Təhlükəsizlik nəzarəti (access control) tətbiq etmək
+- Uzaq obyektlərə lokal interfeys vermək
+- Resurs istifadəsini izləmək və optimizasiya etmək
 
 #### 📌 Proxy Pattern Növləri
 
-##### 1️⃣ Virtual Proxy (Lazy Initialization Proxy)
+#### 1️⃣ Virtual Proxy (Lazy Initialization Proxy)
 
-**Məntiq:** Obyekt yalnız lazım olduqda yaradılır (lazy loading).
-**İstifadə yeri:** Böyük resurslu obyektlər (şəkillər, videolar, DB connection).
+**Məntiq:** Resurs baxımından ağır obyektləri yalnız istifadə tələb etdikdə yaratmaq.
+**İstifadə yeri:** 
+- Böyük şəkillər, video fayllar
+- Ağır obyektlər (database connection, remote connection)
+- Lazımlaşma anında obyektin yaradılması (on-demand)
+
+##### 📌 İş Axını:
+1. Client proxy obyektinə müraciət edir.
+2. Proxy obyekt, obyektin mövcudluğunu yoxlayır.
+3. Əgər obyekt yoxdursa, RealObject yaradılır.
+4. Metod çağırışı real obyektə ötürülür.
+
+##### 📌 Kod:
 
 ```java
 interface Image {
@@ -616,15 +634,31 @@ class ProxyImage implements Image {
         realImage.display();
     }
 }
-
-// İstifadə:
-Image image = new ProxyImage("test.jpg");
-image.display(); // Yalnız bu nöqtədə yüklənir
 ```
 
-#### 2️⃣ Protection Proxy
-**Məntiq:** Giriş hüquqlarını yoxlayır.
-**İstifadə yeri:** Təhlükəsizlik sistemləri, role-based access.
+##### 📌 İstifadə:
+```java
+Image image = new ProxyImage("photo.jpg");
+
+// Fayl hələ yüklənməyib
+image.display(); // Bu zaman fayl yüklənir və göstərilir
+```
+
+#### 2️⃣ Protection Proxy (Access Control Proxy)
+**Məntiq:** İstifadəçinin səlahiyyətini yoxlayaraq yalnız icazəli əməliyyatları icra etmək.
+**İstifadə yeri:** 
+- Role-based sistemlər
+- Təhlükəsizlik siyasəti tətbiqi
+- İstifadəçi autentifikasiyası
+
+##### 📌 İş Axını:
+1. Client proxy obyektinə müraciət edir.
+2. Proxy autentifikasiya yoxlaması aparır.
+3. Əgər icazə varsa, RealObject yaradılır və metod çağırılır.
+4. Əks halda çıxışa icazə verilmir.
+
+
+##### 📌 Kod:
 
 ```java
 interface Database {
@@ -660,8 +694,10 @@ class ProtectionProxy implements Database {
         }
     }
 }
+```
 
-// İstifadə:
+##### 📌 İstifadə:
+```java
 Database db = new ProtectionProxy("admin", "1234");
 db.query("DELETE * FROM users"); // İcazə verilir
 
@@ -669,9 +705,19 @@ Database db2 = new ProtectionProxy("user", "pass");
 db2.query("SELECT * FROM products"); // Access denied
 ```
 
-#### 3️⃣ Remote Proxy
-**Məntiq:** Uzaqda yerləşən obyektlə lokal kimi işləmək.
-**İstifadə yeri:** RPC, REST API client-ları.
+#### 3️⃣ Remote Proxy (Network Proxy)
+**Məntiq:** Uzaq serverdə yerləşən obyektə lokal kimi çıxış etmək.
+**İstifadə yeri:** 
+- RPC sistemləri
+- REST client-lar
+- Distributed system-lər
+
+##### 📌 İş Axını:
+1. Client proxy obyektinə müraciət edir.
+2. Proxy, şəbəkə üzərindən uzaq obyektlə əlaqə qurur.
+3. Cavabı əldə edib Client-ə qaytarır.
+
+##### 📌 Kod:
 
 ```java
 // Uzaq servis interfeysi
@@ -710,9 +756,20 @@ BankService bank = new BankServiceProxy();
 double balance = bank.getBalance("ACC123");
 ```
 
-#### 4️⃣ Smart Reference Proxy
-**Məntiq:** Obyektə istinadları ağıllı şəkildə idarə edir.
-**İstifadə yeri:** Cache, lock management, obyekt sayımı.
+#### 4️⃣ Smart Reference Proxy (Smart Proxy)
+**Məntiq:** Obyektə istinadların idarəsi və əlavə kontrol tətbiqi.
+**İstifadə yeri:** 
+- Cache
+- Lock management
+- Obyekt sayını hesablamaq
+
+##### 📌 İş Axını:
+1. Client proxy obyektinə müraciət edir.
+2. Proxy istifadə sayını qeyd edir.
+3. Lazım olduqda obyekt yaradılır və metod çağırılır.
+4. İstifadə limiti aşılırsa obyekt silinir və növbəti dəfə yenidən yaradılır.
+
+##### 📌 Kod:
 
 ```java
 interface HeavyObject {
@@ -736,112 +793,24 @@ class SmartProxy implements HeavyObject {
         realObject.process();
         accessCount++;
         System.out.println("Access count: " + accessCount);
-        
-        // Əgər 5 dəfədən çox istifadə olunubsa, yaddaşdan sil
+
         if (accessCount > 5) {
             realObject = null;
             System.out.println("Heavy object cleared from memory");
         }
     }
 }
+```
 
-// İstifadə:
+##### 📌 İstifadə:
+```java
 HeavyObject obj = new SmartProxy();
 obj.process(); // 1
 obj.process(); // 2
-// ...
-obj.process(); // 6-dan sonra obyekt silinir
-```
-
-#### 5️⃣ Caching Proxy
-**Məntiq:** Nəticələri cache edir və təkrar sorğulara eyni cavabı qaytarır.
-**İstifadə yeri:** API client-ları, verilənlər bazası sorğuları.
-
-```java
-interface WeatherService {
-    String getWeather(String city);
-}
-
-class RealWeatherService implements WeatherService {
-    public String getWeather(String city) {
-        System.out.println("Fetching fresh weather for " + city);
-        // Əslində API sorğusu gedir
-        return "Sunny, 25°C"; // Nümunə cavab
-    }
-}
-
-class CachingProxy implements WeatherService {
-    private RealWeatherService realService;
-    private Map<String, String> cache = new HashMap<>();
-
-    public String getWeather(String city) {
-        if (cache.containsKey(city)) {
-            System.out.println("Returning cached result for " + city);
-            return cache.get(city);
-        }
-        
-        if (realService == null) {
-            realService = new RealWeatherService();
-        }
-        
-        String weather = realService.getWeather(city);
-        cache.put(city, weather);
-        return weather;
-    }
-}
-
-// İstifadə:
-WeatherService weather = new CachingProxy();
-System.out.println(weather.getWeather("Baku")); // API sorğusu gedir
-System.out.println(weather.getWeather("Baku")); // Cache-dən gəlir
-```
-
-#### 6️⃣ Logging Proxy
-**Məntiq:** Bütün metod çağırışlarını loglayır.
-**İstifadə yeri:** Debugging, audit, monitoring.
-
-```java
-interface Calculator {
-    int add(int a, int b);
-    int subtract(int a, int b);
-}
-
-class RealCalculator implements Calculator {
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-}
-
-class LoggingProxy implements Calculator {
-    private Calculator realCalculator;
-
-    public LoggingProxy(Calculator realCalculator) {
-        this.realCalculator = realCalculator;
-    }
-
-    public int add(int a, int b) {
-        System.out.println("Calling add(" + a + ", " + b + ")");
-        int result = realCalculator.add(a, b);
-        System.out.println("add returned " + result);
-        return result;
-    }
-
-    public int subtract(int a, int b) {
-        System.out.println("Calling subtract(" + a + ", " + b + ")");
-        int result = realCalculator.subtract(a, b);
-        System.out.println("subtract returned " + result);
-        return result;
-    }
-}
-
-// İstifadə:
-Calculator calc = new LoggingProxy(new RealCalculator());
-calc.add(5, 3);
-calc.subtract(10, 4);
+obj.process(); // 3
+obj.process(); // 4
+obj.process(); // 5
+obj.process(); // 6 → obyekt yaddaşdan silinir və yenidən yaradılır
 ```
 
 #### 🔄 Proxy Pattern İş Axışı
@@ -856,14 +825,13 @@ calc.subtract(10, 4);
 
 #### 📊 Proxy Növlərinin Müqayisəsi
 
-| Proxy Növü          | Əsas Məqsəd                   | Üstünlüklər                 | Nümunə İstifadə Sahəsi    |
-| :------------------ | :---------------------------- | :-------------------------- | :------------------------ |
-| **Virtual**         | Lazy loading                  | Resurslardan qənaət         | Böyük fayllar, şəkillər   |
-| **Protection**      | Giriş nəzarəti                | Təhlükəsizlik               | Role-based sistemlər      |
-| **Remote**          | Uzaq obyektlə lokal interfeys | Şəbəkə detallarını gizlədir | RPC, REST client-ları     |
-| **Smart Reference** | İstinad idarəetməsi           | Yaddaş optimizasiyası       | Cache, connection pooling |
-| **Caching**         | Nəticələri saxlayır           | Performans artımı           | Tez-tez oxunan verilənlər |
-| **Logging**         | Çağırışları qeyd edir         | Debugging asanlığı          | Audit, monitoring         |
+| Proxy Növü           | Məqsəd                       | İstifadə Sahəsi       |
+| :------------------- | :--------------------------- | :-------------------- |
+| **Virtual Proxy**    | Lazy-loading                 | Şəkil, böyük fayllar  |
+| **Protection Proxy** | Təhlükəsizlik və icazə       | Role-based sistemlər  |
+| **Remote Proxy**     | Uzaq obyektə lokal interfeys | RPC, REST client-ları |
+| **Smart Proxy**      | Obyektə ağıllı istinad       | Cache, obyekt idarəsi |
+
 
 #### 📊 Proxy Pattern İş Axış Diaqramı
 
@@ -898,6 +866,13 @@ Virtual Protection Remote
     - Protection Proxy: icazə yoxlayır.
     - Remote Proxy: uzaq serverə yönləndirir.
 - Əgər hər şey uyğundursa, real obyektə ötürülür.
+
+##### 📌 Nəticə:
+- Proxy pattern:
+    - Obyektə çıxışı nəzarət altına alır
+    - Əlavə funksionallıqla real obyektləri qoruyur
+    - Resurs israfını və təhlükəsizlik risklərini azaldır
+      və daha rahat idarə olunan sistem arxitekturası qurmağa imkan verir.
 
 ---
 
